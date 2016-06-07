@@ -27,6 +27,7 @@ int main()
 		cout << "| 2. Update                       |" << endl;
 		cout << "| 3. Delete                       |" << endl;
 		cout << "| 4. Show All                     |" << endl;
+		cout << "| 5. Check Employee               |" << endl;
 		cout << "| 0. Exit                         |" << endl;
 		cout << "-----------------------------------" << endl;
 		cout << "Select Mode: ";
@@ -101,6 +102,19 @@ int main()
 
 				mongo.sendRequest(request,response);
 				showAll(response);
+			}
+			break;
+			case 5:
+			{
+				// Check if Person exist
+				cout << "Enter the Employee name you are looking for: ";
+				cin >> value;
+
+				QueryRequest request("MitraisTestDB.Person");
+				ResponseMessage response;
+
+				mongo.sendRequest(request,response);
+				checkPerson(response, value);
 			}
 			break;
 			case 0:
@@ -371,4 +385,38 @@ Filter createFilter()
 	getline(cin, filter.value);
 
 	return filter;
+}
+
+bool checkPerson(ResponseMessage &response, string employeeName)
+{
+	bool result;
+	if ( response.documents().size() > 0 )
+		{
+			for (int i = 0 ; i < response.documents().size() ; i++)
+			{
+				Poco::MongoDB::Document::Ptr doc = response.documents()[i];
+
+				try
+				{
+					string empName = doc->get<string>("firstName");
+
+					if (empName == employeeName)
+					{
+						cout << employeeName << " is exist on our database."<<endl;
+						return true;
+					}
+				}
+				catch(Poco::Exception& ex)
+				{
+					cout << ex.message();
+				}
+			}
+		}
+		else
+		{
+			cout << "There are no employee data " << employeeName << " on our database."<<endl;
+			result = false;
+		}
+
+	return result;
 }

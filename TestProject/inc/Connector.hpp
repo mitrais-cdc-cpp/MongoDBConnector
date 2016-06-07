@@ -60,6 +60,7 @@ template <typename T>
 vector<T> GetAll(ResponseMessage &response, vector<T> collection);
 
 void showAll(ResponseMessage &response);
+bool checkPerson(ResponseMessage &response, string employeeName);
 
 Filter createFilter();
 
