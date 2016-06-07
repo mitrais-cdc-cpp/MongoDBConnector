@@ -31,17 +31,36 @@ struct Person{
 	DateTime lastUpdated;
 };
 
+enum Opr{
+	EQUALS,
+	NOT_EQUALS,
+	GREATER_THAN,
+	GREATER_THAN_EQUALS,
+	LESS_THAN,
+	LESS_THAN_EQUALS,
+	IN,
+	NOT_IN
+};
+
+struct Filter{
+	string field;
+	string value;
+	Opr op;
+};
+
 SharedPtr<InsertRequest> InsertEmployee(Database &db, Person &person);
 
 SharedPtr<UpdateRequest> UpdateEmployee(Database &db,
 		string whereColumn, string whereValue, string newValue);
 
 SharedPtr<DeleteRequest> DeleteEmployee(Database &db,
-		string whereColumn, string whereValue);
+		vector<Filter> &filters);
 
 template <typename T>
 vector<T> GetAll(ResponseMessage &response, vector<T> collection);
 
 void showAll(ResponseMessage &response);
+
+Filter createFilter();
 
 #endif /* CONNECTOR_HPP_ */
