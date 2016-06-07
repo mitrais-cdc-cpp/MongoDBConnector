@@ -159,36 +159,43 @@ SharedPtr<DeleteRequest> DeleteEmployee(Database &db,
 	return deleteRequest;
 }
 
+template <typename T>
+vector<T> GetAll(ResponseMessage &response, vector<T> collection)
+{
+	int size = response.documents().size();
+	for(int i = 0; i < size; i++)
+	{
+		T obj;
+		Document::Ptr doc = response.documents()[i];
+
+		obj.firstName = doc->get<string>("firstName");
+		obj.lastName = doc->get<string>("lastName");
+		obj.address = doc->get<string>("address");
+
+		collection.push_back(obj);
+	}
+
+	return collection;
+}
 
 void showAll(ResponseMessage &response)
 {
-	int numOfDoc = response.documents().size();
+	try{
+		cout << "------------------- Employee Data -------------------"<<endl;
+		cout << "No.   |   First Name   |   LastName   |   Address   |" << endl;
+		cout << "-----------------------------------------------------" << endl;
 
-	if(numOfDoc > 0)
-	{
-		try{
-			cout << "------------------- Employee Data -------------------"<<endl;
-			cout << "No.   |   First Name   |   LastName   |   Address   |" << endl;
-			cout << "-----------------------------------------------------" << endl;
+		vector<Person> employees = GetAll(response, employees);
+		int size = employees.size();
 
-			for(int i=0; i < numOfDoc; i++)
-			{
-				Person obj;
-				Document::Ptr doc = response.documents()[i];
-
-				obj.firstName = doc->get<string>("firstName");
-				obj.lastName = doc->get<string>("lastName");
-				obj.address = doc->get<string>("address");
-
-				cout << "  " << (i + 1) << "   |   "<< obj.firstName << "   |   " << obj.lastName << "   |   "<< obj.address<< endl ;
-			}
-		}
-		catch(NotFoundException& nfe){
-			cout << nfe.message() + " not found."<< endl;
+		for(int i=0; i < size; i++)
+		{
+			Person obj = employees[i];
+			cout << "  " << (i + 1) << "   |   "<< obj.firstName << "   |   "
+					<< obj.lastName << "   |   "<< obj.address << endl ;
 		}
 	}
-	else
-	{
-		cout << "There are no employee data on database now."<<endl;
+	catch(NotFoundException& nfe){
+		cout << nfe.message() + " not found."<< endl;
 	}
 }

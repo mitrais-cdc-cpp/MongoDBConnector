@@ -39,6 +39,9 @@ SharedPtr<UpdateRequest> UpdateEmployee(Database &db,
 SharedPtr<DeleteRequest> DeleteEmployee(Database &db,
 		string whereColumn, string whereValue);
 
+template <typename T>
+vector<T> GetAll(ResponseMessage &response, vector<T> collection);
+
 void showAll(ResponseMessage &response);
 
 #endif /* CONNECTOR_HPP_ */
