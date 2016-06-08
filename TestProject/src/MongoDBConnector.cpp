@@ -1,4 +1,4 @@
-#include "../inc/Connector.hpp"
+#include "../inc/MongoDBConnector.h"
 
 
 SharedPtr<InsertRequest> InsertEmployee(Database &db, Person &person)
