@@ -19,49 +19,68 @@
 #include "Poco/SharedPtr.h"
 
 using namespace Poco;
-using namespace Poco::MongoDB;
-using namespace Poco::Net;
 using namespace std;
 
-struct Person{
-	string firstName;
-	string lastName;
-	string address;
-	DateTime createdDate;
-	DateTime lastUpdated;
-};
+namespace CDC
+{
+	namespace CPP
+	{
+		struct Person
+		{
+			string firstName;
+			string lastName;
+			string address;
+			DateTime createdDate;
+			DateTime lastUpdated;
+		};
 
-enum Opr{
-	EQUALS,
-	NOT_EQUALS,
-	GREATER_THAN,
-	GREATER_THAN_EQUALS,
-	LESS_THAN,
-	LESS_THAN_EQUALS,
-	IN,
-	NOT_IN
-};
+		enum Opr
+		{
+			EQUALS,
+			NOT_EQUALS,
+			GREATER_THAN,
+			GREATER_THAN_EQUALS,
+			LESS_THAN,
+			LESS_THAN_EQUALS,
+			IN,
+			NOT_IN
+		};
 
-struct Filter{
-	string field;
-	string value;
-	Opr op;
-};
+		struct Filter
+		{
+			string field;
+			string value;
+			Opr op;
+		};
 
-SharedPtr<InsertRequest> InsertEmployee(Database &db, Person &person);
+		class Connector
+		{
+		public:
+			Connector() {};
+			static Connector* Instance();
 
-SharedPtr<UpdateRequest> UpdateEmployee(Database &db,
-		string whereColumn, string whereValue, string newValue);
+			void Insert(Person &person);
 
-SharedPtr<DeleteRequest> DeleteEmployee(Database &db,
-		vector<Filter> &filters);
+			void Update(MongoDB::Database &db,
+					string whereColumn, string whereValue, string newValue);
 
-template <typename T>
-vector<T> GetAll(ResponseMessage &response, vector<T> collection);
+			void Delete(vector<Filter> &filters);
 
-void showAll(ResponseMessage &response);
-bool checkPerson(ResponseMessage &response, string employeeName);
+			void showAll();
 
-Filter createFilter();
+			template<typename T>
+			vector<T> GetAll(MongoDB::ResponseMessage &response, vector<T> collection);
+
+			void checkIsExist(string employeeName);
+
+			Filter createFilter();
+
+		private:
+			Connector(Connector const&) {};
+			Connector& operator=(Connector const&) {};
+			static Connector* m_pInstance;
+		};
+	}
+}
 
 #endif /* CONNECTOR_HPP_ */
