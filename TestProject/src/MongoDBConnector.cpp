@@ -22,7 +22,6 @@ MongoDBConnector::MongoDBConnector(const string& host_, const int port_, const s
 	}
 }
 
-
 MongoDBConnector::~MongoDBConnector()
 {
 	if (_connected)
@@ -37,12 +36,10 @@ void MongoDBConnector::setDatabaseName(const string& dbname_)
 	_dbname = dbname_;
 }
 
-
 string MongoDBConnector::getDatabaseName() const
 {
 	return _dbname;
 }
-
 
 bool MongoDBConnector::connect(const string& host_, const int port_, const string& dbname_)
 {
@@ -51,7 +48,6 @@ bool MongoDBConnector::connect(const string& host_, const int port_, const strin
 	_dbname = dbname_;
 	return connect();
 }
-
 
 bool MongoDBConnector::connect()
 {
@@ -74,7 +70,6 @@ bool MongoDBConnector::connect()
 	}
 	return result;
 }
-
 
 template<typename T>
 void MongoDBConnector::Update(const string& dbName_,
@@ -127,9 +122,6 @@ void MongoDBConnector::UpdateAll(const string& dbName_,
 	}
 }
 
-
-
-
 SharedPtr<MongoDB::InsertRequest> MongoDBConnector::InsertEmployee(MongoDB::Database &db, Person &person)
 {
 	DateTime now;
@@ -146,8 +138,6 @@ SharedPtr<MongoDB::InsertRequest> MongoDBConnector::InsertEmployee(MongoDB::Data
 
 	return insertRequest;
 }
-
-
 
 SharedPtr<MongoDB::DeleteRequest> MongoDBConnector::DeleteEmployee(MongoDB::Database &db,
 		vector<Filter> &filters)
@@ -233,8 +223,6 @@ vector<T> MongoDBConnector::GetAll(MongoDB::ResponseMessage &response, vector<T>
 
 	return collection;
 }
-
-
 
 bool checkPerson(MongoDB::ResponseMessage &response, string employeeName)
 {
