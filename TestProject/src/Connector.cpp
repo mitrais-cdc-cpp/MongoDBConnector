@@ -124,17 +124,23 @@ void CPP::Connector::Delete(vector<Filter> &filters) {
 }
 
 template<typename T>
-vector<T> CPP::Connector::GetAll(MongoDB::ResponseMessage &response, vector<T> collection) {
-	int size = response.documents().size();
-	for (int i = 0; i < size; i++) {
-		T obj;
-		MongoDB::Document::Ptr doc = response.documents()[i];
+vector<T> CPP::Connector::GetAll(MongoDB::ResponseMessage &response) {
+	vector<T> collection;
+	try{
+		int size = response.documents().size();
+		for (int i = 0; i < size; i++) {
+			T obj;
+			MongoDB::Document::Ptr doc = response.documents()[i];
 
-		obj.firstName = doc->get<string>("firstName");
-		obj.lastName = doc->get<string>("lastName");
-		obj.address = doc->get<string>("address");
+			obj.firstName = doc->get<string>("firstName");
+			obj.lastName = doc->get<string>("lastName");
+			obj.address = doc->get<string>("address");
 
-		collection.push_back(obj);
+			collection.push_back(obj);
+		}
+	}
+	catch (const std::bad_alloc& e) {
+		std::cout << "Allocation failed: " << e.what() << '\n';
 	}
 
 	return collection;
@@ -154,7 +160,7 @@ void CPP::Connector::showAll() {
 
 		mongo.sendRequest(request, response);
 
-		vector<Person> employees = GetAll(response, employees);
+		vector<Person> employees = GetAll<Person>(response);
 		int size = employees.size();
 
 		for (int i = 0; i < size; i++) {
@@ -162,9 +168,13 @@ void CPP::Connector::showAll() {
 			cout << "  " << (i + 1) << "   |   " << obj.firstName << "   |   "
 					<< obj.lastName << "   |   " << obj.address << endl;
 		}
-	} catch (NotFoundException& nfe) {
+	}
+	catch (NotFoundException& nfe) {
 		cout << nfe.message() + " not found." << endl;
 	}
+	catch (const std::bad_alloc& e) {
+        std::cout << "Allocation failed: " << e.what() << '\n';
+    }
 }
 
 CPP::Filter CPP::Connector::createFilter() {

@@ -69,7 +69,7 @@ namespace CDC
 			void showAll();
 
 			template<typename T>
-			vector<T> GetAll(MongoDB::ResponseMessage &response, vector<T> collection);
+			vector<T> GetAll(MongoDB::ResponseMessage &response);
 
 			void checkIsExist(string employeeName);
 
