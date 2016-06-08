@@ -65,11 +65,13 @@ void CPP::Connector::Update(MongoDB::Database &db,
 	mongo.sendRequest(*updateRequest);
 }
 
-void CPP::Connector::Delete(vector<Filter> &filters) {
+void CPP::Connector::Delete(vector<Filter> &filters)
+{
 	MongoDB::Database db("MitraisTestDB");
 	SharedPtr<MongoDB::DeleteRequest> deleteRequest = db.createDeleteRequest("Person");
 
-	if (!filters.empty()) {
+	if (!filters.empty())
+	{
 		MongoDB::Document& selector = deleteRequest->selector();
 
 		for (vector<Filter>::iterator it = filters.begin(); it != filters.end();
@@ -78,41 +80,52 @@ void CPP::Connector::Delete(vector<Filter> &filters) {
 			string value = it->value;
 			Opr op = it->op;
 
-			selector.addNewDocument(field);
+			if (op == EQUALS)
+			{
+				selector.add(field, value);
+			}
+			else
+			{
 
-			switch (op) {
-			case EQUALS: {
-				selector.add("$eq", value);
-			}
 				break;
-			case NOT_EQUALS: {
-				selector.add("$ne", value);
-			}
-				break;
-			case GREATER_THAN: {
-				selector.add("$gt", value);
-			}
-				break;
-			case GREATER_THAN_EQUALS: {
-				selector.add("$gte", value);
-			}
-				break;
-			case LESS_THAN: {
-				selector.add("$lt", value);
-			}
-				break;
-			case LESS_THAN_EQUALS: {
-				selector.add("$lte", value);
-			}
-				break;
-			case IN: {
-				selector.add("$in", value);
-			}
-				break;
-			case NOT_IN: {
-				selector.add("$nin", value);
-			}
-				break;
+				switch (op)
+				{
+					case NOT_EQUALS:
+					{
+						selector.addNewDocument(field).add("$ne", value);
+					}
+					break;
+					case GREATER_THAN:
+					{
+						selector.addNewDocument(field).add("$gt", value);
+					}
+					break;
+					case GREATER_THAN_EQUALS:
+					{
+						selector.addNewDocument(field).add("$gte", value);
+					}
+					break;
+					case LESS_THAN:
+					{
+						selector.addNewDocument(field).add("$lt", value);
+					}
+					break;
+					case LESS_THAN_EQUALS:
+					{
+						selector.addNewDocument(field).add("$lte", value);
+					}
+					break;
+					case IN:
+					{
+						selector.addNewDocument(field).add("$in", value);
+					}
+					break;
+					case NOT_IN:
+					{
+						selector.addNewDocument(field).add("$nin", value);
+					}
+					break;
+				}
 			}
 		}
 	}
