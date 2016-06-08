@@ -9,16 +9,12 @@ using namespace Mitrais::util;
 int main()
 {
 	int mode;
-	Person person;
-	string response;
-	string where,value,newValue;
 
 	MongoDBConnector mongo;
 
 	try
 	{
-		mongo.connect("localhost", 27017);
-		Database db("MitraisTestDB");
+		mongo.connect("localhost", 27017, "MitraisTestDB");
 
 		mainMenu:
 		cout << "----------- Simple CRUD -----------" << endl;
@@ -36,84 +32,22 @@ int main()
 		{
 			case 1:
 			{
-				// Insert Mode
-				cout << "First Name? ";
-				cin >> person.firstName;
-
-				cout << "Last Name? ";
-				cin >> person.lastName;
-
-				cout << "Address? ";
-				cin >> person.address;
-
-				cout << "Inserting data to the database, please wait..."<<endl;
-				mongo.sendRequest(*InsertEmployee(db, person));
-				cout << "Data has been inserted to the database."<<endl;
 			}
 			break;
 			case 2:
 			{
-				// Update Mode
-				cout << "Update by (firstName/lastName)? ";
-				cin >> where;
-
-				cout << "Where " + where + " is ";
-				cin >> value;
-
-				cout << "Set new value ";
-				cin >> newValue;
-
-				cout << "Updating data, please wait..."<<endl;
-				mongo.sendRequest(*UpdateEmployee(db, where, value, newValue));
-				cout << "Data has been updated."<<endl;
 			}
 			break;
 			case 3:
 			{
-				// Delete Mode
-				Filter filter = createFilter();
-
-				vector<Filter> filters;
-				filters.push_back(filter);
-
-				addFilter:
-				cout << "Do you want to add criteria/filter (y/n)?";
-				char answer;
-				cin >> answer;
-
-				if (answer == 'Y' || answer == 'y')
-				{
-					Filter moreFilter = createFilter();
-					filters.push_back(filter);
-					goto addFilter;
-				}
-
-				cout << "Deleting data, please wait..."<<endl;
-				mongo.sendRequest(*DeleteEmployee(db, filters));
-				cout << "Data has been deleted."<<endl;
 			}
 			break;
 			case 4:
 			{
-				// Show all
-				QueryRequest request("MitraisTestDB.Person");
-				ResponseMessage response;
-
-				mongo.sendRequest(request,response);
-				showAll(response);
 			}
 			break;
 			case 5:
 			{
-				// Check if Person exist
-				cout << "Enter the Employee name you are looking for: ";
-				cin >> value;
-
-				QueryRequest request("MitraisTestDB.Person");
-				ResponseMessage response;
-
-				mongo.sendRequest(request,response);
-				checkPerson(response, value);
 			}
 			break;
 			case 0:
@@ -122,15 +56,8 @@ int main()
 			}
 			break;
 		}
-
-		cout << "Do you want to continue (Y/N)? ";
-		cin >> response;
-		if(response == "Y" || response == "y")
-		{
-			goto mainMenu;
-		}
 	}
-	catch (ConnectionRefusedException& e)
+	catch (Poco::Net::ConnectionRefusedException& e)
 	{
 		cout << "Couldn't connect to " << e.message() << ". " << endl;
 	}

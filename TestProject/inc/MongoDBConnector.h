@@ -1,10 +1,14 @@
 #ifndef MONGODAOLIB_MONGODBCONNECTOR_H_
 #define MONGODAOLIB_MONGODBCONNECTOR_H_
 
+#include <string>
+
 #include "PocoMongoIncludes.h"
 #include "Person.h"
 #include "Operator.h"
 #include "Filter.h"
+
+
 
 using namespace std;
 using namespace Poco;
