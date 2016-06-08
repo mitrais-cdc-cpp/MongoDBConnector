@@ -1,27 +1,13 @@
-/*
- * Connector.hpp
- *
- *  Created on: Jun 7, 2016
- *      Author: developer
- */
+#ifndef MONGODAOLIB_CONNECTOR_HPP_
+#define MONGODAOLIB_CONNECTOR_HPP_
 
-#ifndef CONNECTOR_HPP_
-#define CONNECTOR_HPP_
-
-#include "Poco/MongoDB/Connection.h"
-#include "Poco/MongoDB/Database.h"
-#include "Poco/MongoDB/InsertRequest.h"
-#include "Poco/MongoDB/UpdateRequest.h"
-#include "Poco/MongoDB/DeleteRequest.h"
-#include "Poco/MongoDB/QueryRequest.h"
-#include "Poco/MongoDB/MongoDB.h"
-#include "Poco/Net/NetException.h"
-#include "Poco/SharedPtr.h"
+#include "PocoMongoIncludes.h"
 
 using namespace Poco;
-using namespace Poco::MongoDB;
-using namespace Poco::Net;
 using namespace std;
+
+namespace Mitrais {
+namespace util {
 
 struct Person{
 	string firstName;
@@ -64,4 +50,15 @@ bool checkPerson(ResponseMessage &response, string employeeName);
 
 Filter createFilter();
 
-#endif /* CONNECTOR_HPP_ */
+
+}} //namespace Mitrais::util
+
+#endif /* MONGODAOLIB_CONNECTOR_HPP_ */
+
+/**
+ * ---------------------------------------------------------------------------
+ *                         MITRAIS – CONTINUOUS COMMITMENT
+ *         Jl Bypass Ngurah Rai, gg. Mina Utama No. 1, Suwung 80223 Bali
+ *                          Phone: +62 / (0)807 / 1222-222
+ *            OBSERVE COPYRIGHT AS PER ISO 16016 / COPYRIGHT RESERVED
+ ******************************************************************************/
