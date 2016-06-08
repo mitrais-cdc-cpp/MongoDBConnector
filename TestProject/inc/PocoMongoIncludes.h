@@ -1,6 +1,9 @@
 #ifndef MONGODAOLIB_POCOMONGOINCLUDES_H_
 #define MONGODAOLIB_POCOMONGOINCLUDES_H_
 
+namespace Mitrais {
+namespace util {
+
 #include "Poco/MongoDB/Connection.h"
 #include "Poco/MongoDB/Database.h"
 #include "Poco/MongoDB/InsertRequest.h"
@@ -11,6 +14,8 @@
 
 #include "Poco/SharedPtr.h"
 #include "Poco/Net/NetException.h"
+
+}} // Mitrais::util
 
 #endif /* MONGODAOLIB_POCOMONGOINCLUDES_H_ */
 

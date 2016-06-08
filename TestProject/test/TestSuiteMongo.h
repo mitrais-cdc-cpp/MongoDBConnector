@@ -1,13 +1,19 @@
-#ifndef TEST_TESTSUITEMONGO_H_
-#define TEST_TESTSUITEMONGO_H_
+#ifndef MONGODAOLIB_TESTSUITEMONGO_H_
+#define MONGODAOLIB_TESTSUITEMONGO_H_
+
+#include "MongoDBConnector.h"
+
+using namespace std;
+using namespace Mitrais::util;
 
 int main()
 {
 	int mode;
 	Person person;
 	string response;
-	Connection mongo;
 	string where,value,newValue;
+
+	MongoDBConnector mongo;
 
 	try
 	{
@@ -132,7 +138,7 @@ int main()
 	return 0;
 }
 
-#endif /* TEST_TESTSUITEMONGO_H_ */
+#endif /* MONGODAOLIB_TESTSUITEMONGO_H_ */
 
 /**
  * ---------------------------------------------------------------------------

@@ -1,52 +1,168 @@
 #include "../inc/MongoDBConnector.h"
 
 
-SharedPtr<InsertRequest> InsertEmployee(Database &db, Person &person)
+MongoDBConnector::MongoDBConnector(const string& host_, const int port_, const string& dbname_)
+: _host(host_)
+, _port(port_)
+, _dbname(dbname_)
+, _connected(false)
+{
+	if (!_connected)
+	{
+		try
+		{
+			_mongoDBConn.connect(host_, port_);
+			_connected = true;
+		}
+		catch (Poco::Net::ConnectionRefusedException& e)
+		{
+			//TODO: logger!
+			std::cout << "Couldn't connect to " << e.message() << ". " << std::endl;
+		}
+	}
+}
+
+
+MongoDBConnector::~MongoDBConnector()
+{
+	if (_connected)
+	{
+		_mongoDBConn.disconnect();
+		_connected = false;
+	}
+}
+
+void MongoDBConnector::setDatabaseName(const string& dbname_)
+{
+	_dbname = dbname_;
+}
+
+
+string MongoDBConnector::getDatabaseName() const
+{
+	return _dbname;
+}
+
+
+bool MongoDBConnector::connect(const string& host_, const int port_, const string& dbname_)
+{
+	_host = host_;
+	_port = port_;
+	_dbname = dbname_;
+	return connect();
+}
+
+
+bool MongoDBConnector::connect()
+{
+	//TODO: check if connected
+	bool result = false;
+
+	if (!_connected)
+	{
+		try
+		{
+			_mongoDBConn.connect(_host, _port);
+			_connected = true;
+			result = true;
+		}
+		catch (Poco::Net::ConnectionRefusedException& e)
+		{
+			//TODO: logger!
+			std::cout << "Couldn't connect to " << e.message() << ". " << std::endl;
+		}
+	}
+	return result;
+}
+
+
+template<typename T>
+void MongoDBConnector::Update(const string& dbName_,
+		const string& column_, const T& old_, const T& new_)
+{
+	if(_connected)
+	{
+		try
+		{
+			MongoDB::Database db(dbName_);
+			SharedPtr<MongoDB::UpdateRequest> updateRequest = Update(db, column_, old_, new_);
+
+			_mongoDBConn.sendRequest(*updateRequest);
+		}
+		catch(...)
+		{
+
+		}
+	}
+}
+
+template<typename T>
+void MongoDBConnector::UpdateAll(const string& dbName_,
+		const vector<T>& columns_, const vector<T>& old_, const vector<T>& new_)
+{
+	if(columns_.size() == old_.size() && columns_.size() == new_.size())
+	{
+		if(_connected)
+		{
+			try
+			{
+				MongoDB::Database db(dbName_);
+
+				for(unsigned int i = 0; i != columns_.size(); ++i)
+				{
+					SharedPtr<MongoDB::UpdateRequest> updateRequest = Update(db, columns_[i], old_[i], new_[i]);
+					_mongoDBConn.sendRequest(*updateRequest);
+				}
+			}
+			catch(...)
+			{
+
+			}
+		}
+
+	}
+	else
+	{
+		//TODO:
+	}
+}
+
+
+
+
+SharedPtr<MongoDB::InsertRequest> MongoDBConnector::InsertEmployee(MongoDB::Database &db, Person &person)
 {
 	DateTime now;
-	Document::Ptr personPtr = new Document();
+	MongoDB::Document::Ptr personPtr = new MongoDB::Document();
 
 	personPtr->add("firstName", person.firstName);
 	personPtr->add("lastName", person.lastName);
 	personPtr->add("address", person.address);
 	personPtr->add("createdDate", now.timestamp());
-	personPtr->add("lastUpdated", NullValue());
+	personPtr->add("lastUpdated", NULL);
 
-	SharedPtr<InsertRequest> insertRequest = db.createInsertRequest("Person");
+	SharedPtr<MongoDB::InsertRequest> insertRequest = db.createInsertRequest("Person");
 	insertRequest->documents().push_back(personPtr);
 
 	return insertRequest;
 }
 
 
-SharedPtr<UpdateRequest> UpdateEmployee(Database &db,
-		string whereColumn, string whereValue, string newValue)
-{
-	SharedPtr<UpdateRequest> updateRequest = db.createUpdateRequest("Person");
 
-	Document& selector = updateRequest->selector();
-	Document& update = updateRequest->update();
-
-	selector.add(whereColumn, whereValue);
-	update.addNewDocument("$set").add(whereColumn, newValue);
-
-	return updateRequest;
-}
-
-SharedPtr<DeleteRequest> DeleteEmployee(Database &db,
+SharedPtr<MongoDB::DeleteRequest> MongoDBConnector::DeleteEmployee(MongoDB::Database &db,
 		vector<Filter> &filters)
 {
-	SharedPtr<DeleteRequest> deleteRequest = db.createDeleteRequest("Person");
+	SharedPtr<MongoDB::DeleteRequest> deleteRequest = db.createDeleteRequest("Person");
 
 	if (!filters.empty())
 	{
-		Document& selector = deleteRequest->selector();
+		MongoDB::Document& selector = deleteRequest->selector();
 
 		for (vector<Filter>::iterator it = filters.begin(); it != filters.end(); ++it)
 		{
 			string field = it->field;
 			string value = it->value;
-			Opr op = it->op;
+			Operator op = it->op;
 
 			selector.addNewDocument(field);
 
@@ -99,15 +215,14 @@ SharedPtr<DeleteRequest> DeleteEmployee(Database &db,
 	return deleteRequest;
 }
 
-
 template <typename T>
-vector<T> GetAll(ResponseMessage &response, vector<T> collection)
+vector<T> MongoDBConnector::GetAll(MongoDB::ResponseMessage &response, vector<T> collection)
 {
 	int size = response.documents().size();
 	for(int i = 0; i < size; i++)
 	{
 		T obj;
-		Document::Ptr doc = response.documents()[i];
+		MongoDB::Document::Ptr doc = response.documents()[i];
 
 		obj.firstName = doc->get<string>("firstName");
 		obj.lastName = doc->get<string>("lastName");
@@ -119,136 +234,9 @@ vector<T> GetAll(ResponseMessage &response, vector<T> collection)
 	return collection;
 }
 
-void showAll(ResponseMessage &response)
-{
-	try{
-		cout << "------------------- Employee Data -------------------"<<endl;
-		cout << "No.   |   First Name   |   LastName   |   Address   |" << endl;
-		cout << "-----------------------------------------------------" << endl;
 
-		vector<Person> employees = GetAll(response, employees);
-		int size = employees.size();
 
-		for(int i=0; i < size; i++)
-		{
-			Person obj = employees[i];
-			cout << "  " << (i + 1) << "   |   "<< obj.firstName << "   |   "
-					<< obj.lastName << "   |   "<< obj.address << endl ;
-		}
-	}
-	catch(NotFoundException& nfe){
-		cout << nfe.message() + " not found."<< endl;
-	}
-}
-
-Filter createFilter()
-{
-	Filter filter;
-
-	cout << "What column to be filtered (1-3): " << endl;
-	cout << "1. First Name" << endl;
-	cout << "2. Last Name" << endl;
-	cout << "3. Address" << endl;
-	cout << "Please enter your choice (1-3) : ";
-	int selectedColumn;
-	cin >> selectedColumn;
-
-	switch (selectedColumn)
-	{
-		case 1:
-		{
-			filter.field = "firstName";
-		}
-		break;
-		case 2:
-		{
-			filter.field = "lastName";
-		}
-		break;
-		case 3:
-		{
-			filter.field = "address";
-		}
-	}
-
-//	do
-//	{
-//		cout << "Invalid Column : " << selectedColumn << endl;
-//		cout << "Pleas enter valid column (1-3) : " ;
-//		cin >> selectedColumn;
-//	}while (selectedColumn < 0 || selectedColumn > 3);
-
-	cout << "Operator : " << endl;
-	cout << "1. Equal" << endl;
-	cout << "2. Not Equal" << endl;
-	cout << "3. Greater" << endl;
-	cout << "4. Greater Than Equals" << endl;
-	cout << "5. Less Than" << endl;
-	cout << "6. Less Than Equal" << endl;
-	cout << "7. In" << endl;
-	cout << "8. Not In" << endl;
-	cout << "Please enter the operator (1-8) : ";
-	int selectedOpr;
-	cin >> selectedOpr;
-
-	switch (selectedOpr)
-	{
-		case 1:
-		{
-			filter.op = EQUALS;
-		}
-		break;
-		case 2:
-		{
-			filter.op = NOT_EQUALS;
-		}
-		break;
-		case 3:
-		{
-			filter.op = GREATER_THAN;
-		}
-		break;
-		case 4:
-		{
-			filter.op = GREATER_THAN_EQUALS;
-		}
-		break;
-		case 5:
-		{
-			filter.op = LESS_THAN;
-		}
-		break;
-		case 6:
-		{
-			filter.op = LESS_THAN_EQUALS;
-		}
-		break;
-		case 7:
-		{
-			filter.op = IN;
-		}
-		break;
-		case 8:
-		{
-			filter.op = NOT_IN;
-		}
-	}
-
-//	do
-//	{
-//		cout << "Invalid Operator : " << selectedOpr << endl;
-//		cout << "Pleas enter valid operator (1-8) : " ;
-//		cin >> selectedOpr;
-//	}while (selectedOpr < 0 || selectedOpr > 8);
-
-	cout << "Filter value : " << endl;
-	cin.ignore();
-	getline(cin, filter.value);
-
-	return filter;
-}
-
-bool checkPerson(ResponseMessage &response, string employeeName)
+bool checkPerson(MongoDB::ResponseMessage &response, string employeeName)
 {
 	bool result;
 	if ( response.documents().size() > 0 )
