@@ -31,6 +31,16 @@ public:
 
 	bool checkPerson(MongoDB::ResponseMessage &response, string employeeName);
 
+<<<<<<< HEAD
+=======
+
+	template<typename T>
+	void Update(const string& dbName_, const string& column_, const T& old_, const T& new_);
+
+	template<typename T>
+	void UpdateAll(const string& dbName_, const vector<T>& columns_, const vector<T>& old_, const vector<T>& new_);
+
+>>>>>>> branch 'master' of https://github.com/mitrais-cdc-cpp/MongoDBConnector
 private:
 
 	std::string _host;
