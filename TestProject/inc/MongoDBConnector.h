@@ -33,54 +33,10 @@ public:
 
 
 	template<typename T>
-	void Update(const string& dbName_, const string& column_, const T& old_, const T& new_)
-	{
-		if(_connected)
-		{
-			try
-			{
-				MongoDB::Database db(dbName_);
-				SharedPtr<MongoDB::UpdateRequest> updateRequest = Update(db, column_, old_, new_);
-
-				_mongoDBConn.sendRequest(*updateRequest);
-			}
-			catch(...)
-			{
-
-			}
-		}
-	}
+	void Update(const string& dbName_, const string& column_, const T& old_, const T& new_);
 
 	template<typename T>
-	void UpdateAll(const string& dbName_, const vector<T>& columns_, const vector<T>& old_, const vector<T>& new_)
-	{
-		if(columns_.size() == old_.size() && columns_.size() == new_.size())
-		{
-
-			if(_connected)
-			{
-				try
-				{
-					MongoDB::Database db(dbName_);
-
-					for(unsigned int i = 0; i != columns_.size(); ++i)
-					{
-						SharedPtr<MongoDB::UpdateRequest> updateRequest = Update(db, columns_[i], old_[i], new_[i]);
-						_mongoDBConn.sendRequest(*updateRequest);
-					}
-				}
-				catch(...)
-				{
-
-				}
-			}
-
-		}
-		else
-		{
-			//TODO:
-		}
-	}
+	void UpdateAll(const string& dbName_, const vector<T>& columns_, const vector<T>& old_, const vector<T>& new_);
 
 private:
 
