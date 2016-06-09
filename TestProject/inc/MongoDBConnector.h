@@ -31,57 +31,6 @@ public:
 
 	bool checkPerson(MongoDB::ResponseMessage &response, string employeeName);
 
-
-	template<typename T>
-	void Update(const string& dbName_, const string& column_, const T& old_, const T& new_)
-	{
-		if(_connected)
-		{
-			try
-			{
-				MongoDB::Database db(dbName_);
-				SharedPtr<MongoDB::UpdateRequest> updateRequest = Update(db, column_, old_, new_);
-
-				_mongoDBConn.sendRequest(*updateRequest);
-			}
-			catch(...)
-			{
-
-			}
-		}
-	}
-
-	template<typename T>
-	void UpdateAll(const string& dbName_, const vector<T>& columns_, const vector<T>& old_, const vector<T>& new_)
-	{
-		if(columns_.size() == old_.size() && columns_.size() == new_.size())
-		{
-
-			if(_connected)
-			{
-				try
-				{
-					MongoDB::Database db(dbName_);
-
-					for(unsigned int i = 0; i != columns_.size(); ++i)
-					{
-						SharedPtr<MongoDB::UpdateRequest> updateRequest = Update(db, columns_[i], old_[i], new_[i]);
-						_mongoDBConn.sendRequest(*updateRequest);
-					}
-				}
-				catch(...)
-				{
-
-				}
-			}
-
-		}
-		else
-		{
-			//TODO:
-		}
-	}
-
 private:
 
 	std::string _host;
@@ -99,13 +48,17 @@ private:
 	template <typename T>
 	vector<T> GetAll(MongoDB::ResponseMessage &response, vector<T> collection);
 
-
 	//TODO: need more abstraction
 	SharedPtr<MongoDB::InsertRequest> InsertEmployee(MongoDB::Database &db, Person &person);
 
 	//TODO: need more abstraction
 	SharedPtr<MongoDB::DeleteRequest> DeleteEmployee(MongoDB::Database &db, vector<Filter> &filters);
 
+	template<typename T>
+	void Update(const string& dbName_, const string& column_, const T& old_, const T& new_);
+
+	template<typename T>
+	void UpdateAll(const string& dbName_, const vector<T>& columns_, const vector<T>& old_, const vector<T>& new_);
 
 };
 

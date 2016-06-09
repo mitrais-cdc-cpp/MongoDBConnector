@@ -1,0 +1,3 @@
+/home/developer/git/MongoDBConnector/TestProject/cmake/CMakeFiles/rebuild_cache.dir
+/home/developer/git/MongoDBConnector/TestProject/cmake/CMakeFiles/edit_cache.dir
+/home/developer/git/MongoDBConnector/TestProject/cmake/CMakeFiles/MongoDaoLib.dir
