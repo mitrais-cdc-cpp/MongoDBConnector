@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC   -shared -Wl,-soname,libMongoDaoLib.so -o libMongoDaoLib.so  /usr/local//lib/libPocoNetd.so /usr/local//lib/libPocoUtild.so /usr/local//lib/libPocoMongoDBd.so -Wl,-rpath,/usr/local/lib 
