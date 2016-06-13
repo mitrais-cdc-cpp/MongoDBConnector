@@ -1,8 +1,13 @@
 cmake_minimum_required(VERSION 3.0)
 project(MongoDaoLib)
 
+###############################################################################
+## version ####################################################################
+###############################################################################
 
-#http://stackoverflow.com/questions/21163188/most-simple-but-complete-cmake-example
+#set (MongoDaoLib_VERSION_MAJOR 1)
+#set (MongoDaoLib_VERSION_MINOR 0)
+
 
 ###############################################################################
 ## file globbing ##############################################################
@@ -33,7 +38,7 @@ set_target_properties(MongoDaoLib PROPERTIES LINKER_LANGUAGE CXX)
 ###############################################################################
 
 # set the POCO paths and libs
-set(POCO_PREFIX      "/usr/local/")
+set(POCO_PREFIX      "/usr/local")
 set(POCO_INCLUDE_DIR "${POCO_PREFIX}/include")
 set(POCO_LIB_DIR     "${POCO_PREFIX}/lib")
 set(POCO_LIBS        "${POCO_LIB_DIR}/libPocoNetd.so"
@@ -46,8 +51,19 @@ target_include_directories(MongoDaoLib PRIVATE "${POCO_INCLUDE_DIR}")
 # link the app against POCO
 target_link_libraries(MongoDaoLib "${POCO_LIBS}")
 
-if(Poco_FOUND)    
-    message(STATUS "\n------------ linked libary paths ------------")
-    message(STATUS ">> Poco libs: ${POCO_LIBS}")
-    message(STATUS "\n")                                                                                                                                                                                                                       
-endif() 
+###############################################################################
+## install ####################################################################
+###############################################################################
+
+install(TARGETS MongoDaoLib DESTINATION "lib")
+install(DIRECTORY inc/ DESTINATION include/MongoDaoLib FILES_MATCHING PATTERN "*.h")
+
+###############################################################################
+## Outputs ####################################################################
+###############################################################################
+message(STATUS "\n------------ PATHS: ------------")
+message(STATUS ">> Poco inc: ${POCO_INCLUDE_DIR}")
+message(STATUS ">> Poco lib: ${POCO_LIB_DIR}")
+message(STATUS "\n")
+
+
