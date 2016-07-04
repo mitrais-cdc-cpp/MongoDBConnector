@@ -10,11 +10,6 @@ set(_ECLIPSE_VERSION "4.5")
 file(GLOB SOURCES
  	src/Connector.cpp)
 
-message("Following sources found:")
-foreach(a ${SOURCES})
-  message("${a}")
-endforeach()
-
 ###############################################################################
 ## target definitions #########################################################
 ###############################################################################

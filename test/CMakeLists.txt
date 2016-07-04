@@ -11,14 +11,6 @@ file(GLOB SOURCES
  *.h
  *.cpp)
 
-#to take control which files are used, dont go recursive through
-#file(GLOB_RECURSE SOURCES src/*.cpp inc/*.h)
-
-message("Following sources found:")
-foreach(a ${SOURCES})
-  message("${a}")
-endforeach()
-
 ###############################################################################
 ## target definitions #########################################################
 ###############################################################################
@@ -39,13 +31,6 @@ set(CMAKE_BUILD_TYPE Debug)
 #enable c++11 and set it required
 set_property(TARGET DAO_Test PROPERTY CXX_STANDARD 11)
 set_property(TARGET DAO_Test PROPERTY CXX_STANDARD_REQUIRED ON)
-
-#project(DAO_Test CXX)
-#message("Your C++ compiler supports these C++ features:")
-#foreach(i ${CMAKE_CXX_COMPILE_FEATURES})
-#  message("${i}")
-#endforeach()
-
 
 ###############################################################################
 ## dependencies ###############################################################

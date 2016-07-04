@@ -7,7 +7,7 @@
 
 #include "../inc/DoaImpl/SpiderBite/Connector.h"
 
-using namespace Mitrais::util;
+using namespace DB;
 
 // Global static pointer used to ensure a single instance of the class.
 Connector* Connector::m_pInstance = NULL;
@@ -90,16 +90,13 @@ void Connector::Delete(vector<Filter> &filters)
 	{
 		MongoDB::Document& selector = deleteRequest->selector();
 
-		for (vector<Filter>::iterator it = filters.begin(); it != filters.end();
-				++it) {
-			string field = it->field;
-			string value = it->value;
-			Opr op = it->op;
+		for (vector<Filter>::iterator it = filters.begin(); it != filters.end(); ++it)
+		{
+			string field = (*it).field;
+			string value = (*it).value;
+			Operator op = (*it).op;
 
-			cout << "Field " << field << endl;
-			cout << "Value " << value << endl;
-
-			if (op == EQUALS)
+			if (op == DB::Common::Operator::EQUALS)
 			{
 				selector.add(field, value);
 			}
@@ -109,37 +106,37 @@ void Connector::Delete(vector<Filter> &filters)
 				break;
 				switch (op)
 				{
-					case NOT_EQUALS:
+					case DB::Common::Operator::NOT_EQUALS:
 					{
 						selector.addNewDocument(field).add("$ne", value);
 					}
 					break;
-					case GREATER_THAN:
+					case DB::Common::Operator::GREATER_THAN:
 					{
 						selector.addNewDocument(field).add("$gt", value);
 					}
 					break;
-					case GREATER_THAN_EQUALS:
+					case DB::Common::Operator::GREATER_THAN_EQUALS:
 					{
 						selector.addNewDocument(field).add("$gte", value);
 					}
 					break;
-					case LESS_THAN:
+					case DB::Common::Operator::LESS_THAN:
 					{
 						selector.addNewDocument(field).add("$lt", value);
 					}
 					break;
-					case LESS_THAN_EQUALS:
+					case DB::Common::Operator::LESS_THAN_EQUALS:
 					{
 						selector.addNewDocument(field).add("$lte", value);
 					}
 					break;
-					case IN:
+					case DB::Common::Operator::IN:
 					{
 						selector.addNewDocument(field).add("$in", value);
 					}
 					break;
-					case NOT_IN:
+					case DB::Common::Operator::NOT_IN:
 					{
 						selector.addNewDocument(field).add("$nin", value);
 					}
@@ -162,11 +159,15 @@ void Connector::Delete(vector<Filter> &filters)
  * @return template a template
  */
 template<typename T>
-vector<T> Connector::GetAll(MongoDB::ResponseMessage &response) {
+vector<T> Connector::GetAll(MongoDB::ResponseMessage &response)
+{
 	vector<T> collection;
-	try{
+
+	try
+	{
 		int size = response.documents().size();
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++)
+		{
 			T obj;
 			MongoDB::Document::Ptr doc = response.documents()[i];
 
@@ -176,7 +177,8 @@ vector<T> Connector::GetAll(MongoDB::ResponseMessage &response) {
 			collection.push_back(obj);
 		}
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		std::cout << "Allocation failed: " << e.what() << '\n';
 	}
 
@@ -191,7 +193,8 @@ void Connector::showAll() {
 	cout << "No.   |   Content   |   Protocol Type   |" << endl;
 	cout << "-----------------------------------------" << endl;
 
-	try {
+	try
+	{
 		MongoDB::QueryRequest request(_dbName + "." + _collectionName);
 		MongoDB::ResponseMessage response;
 
@@ -203,16 +206,19 @@ void Connector::showAll() {
 		vector<Website> websites = GetAll<Website>(response);
 		int size = websites.size();
 
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++)
+		{
 			Website obj = websites[i];
 			cout << "  " << (i + 1) << "   |   " << obj.content << "   |   "
 					<< obj.protocolType << endl;
 		}
 	}
-	catch (NotFoundException& nfe) {
+	catch (NotFoundException& nfe)
+	{
 		cout << nfe.message() + " not found." << endl;
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
         std::cout << "Allocation failed: " << e.what() << '\n';
     }
 }
@@ -256,35 +262,35 @@ Filter Connector::createFilter(int selectedColumn, int selectedOpr, string value
 
 	switch (selectedOpr) {
 	case 1: {
-		filter.op = EQUALS;
+		filter.op = DB::Common::Operator::EQUALS;
 	}
 		break;
 	case 2: {
-		filter.op = NOT_EQUALS;
+		filter.op = DB::Common::Operator::NOT_EQUALS;
 	}
 		break;
 	case 3: {
-		filter.op = GREATER_THAN;
+		filter.op = DB::Common::Operator::GREATER_THAN;
 	}
 		break;
 	case 4: {
-		filter.op = GREATER_THAN_EQUALS;
+		filter.op = DB::Common::Operator::GREATER_THAN_EQUALS;
 	}
 		break;
 	case 5: {
-		filter.op = LESS_THAN;
+		filter.op = DB::Common::Operator::LESS_THAN;
 	}
 		break;
 	case 6: {
-		filter.op = LESS_THAN_EQUALS;
+		filter.op = DB::Common::Operator::LESS_THAN_EQUALS;
 	}
 		break;
 	case 7: {
-		filter.op = IN;
+		filter.op = DB::Common::Operator::IN;
 	}
 		break;
 	case 8: {
-		filter.op = NOT_IN;
+		filter.op = DB::Common::Operator::NOT_IN;
 	}
 	}
 

@@ -12,18 +12,17 @@
 
 using namespace std;
 
-namespace Mitrais
+namespace DB
 {
-	namespace util
-	{
-		// struct of Website
-		struct Website{
-			string 	content;
-			string 	protocolType;
-			time_t 	createdDate;
-			time_t 	lastUpdated;
-		};
-	}
-}
+
+struct Website
+{
+	string 	content;
+	string 	protocolType;
+	time_t 	createdDate;
+	time_t 	lastUpdated;
+};
+
+} //namespace DB
 
 #endif /* INC_WEBSITE_H_ */
