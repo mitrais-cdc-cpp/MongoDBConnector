@@ -5,7 +5,7 @@
  *      Author: Ari Suarkadipa
  */
 
-#include "../inc/Connector.h"
+#include "../inc/DoaImpl/SpiderBite/Connector.h"
 
 using namespace Mitrais::util;
 
@@ -95,6 +95,9 @@ void Connector::Delete(vector<Filter> &filters)
 			string field = it->field;
 			string value = it->value;
 			Opr op = it->op;
+
+			cout << "Field " << field << endl;
+			cout << "Value " << value << endl;
 
 			if (op == EQUALS)
 			{
@@ -217,17 +220,26 @@ void Connector::showAll() {
 /**
  * Create filter used for delete method
  *
+ * @param selectedColumn
+ * 1 is content
+ * 2 is protocolType
+ *
+ * @param selectedOpr is selected operator
+ * 1. Equal
+ * 2. Not Equal
+ * 3. Greater
+ * 4. Greater Than Equals
+ * 5. Less Than
+ * 6. Less Than Equal
+ * 7. In
+ * 8. Not In
+ *
+ * @param value is a value criteria to delete
+ *
  * @return Filter
  */
-Filter Connector::createFilter() {
+Filter Connector::createFilter(int selectedColumn, int selectedOpr, string value) {
 	Filter filter;
-
-	cout << "What column to be filtered (1-2): " << endl;
-	cout << "1. Content" << endl;
-	cout << "2. Protocol Type" << endl;
-	cout << "Please enter your choice (1-2) : ";
-	int selectedColumn;
-	cin >> selectedColumn;
 
 	switch (selectedColumn)
 	{
@@ -241,19 +253,6 @@ Filter Connector::createFilter() {
 			filter.field = "protocolType";
 		}
 	}
-
-	cout << "Operator : " << endl;
-	cout << "1. Equal" << endl;
-	cout << "2. Not Equal" << endl;
-	cout << "3. Greater" << endl;
-	cout << "4. Greater Than Equals" << endl;
-	cout << "5. Less Than" << endl;
-	cout << "6. Less Than Equal" << endl;
-	cout << "7. In" << endl;
-	cout << "8. Not In" << endl;
-	cout << "Please enter the operator (1-8) : ";
-	int selectedOpr;
-	cin >> selectedOpr;
 
 	switch (selectedOpr) {
 	case 1: {
@@ -289,9 +288,7 @@ Filter Connector::createFilter() {
 	}
 	}
 
-	cout << "Filter value : " << endl;
-	cin.ignore();
-	getline(cin, filter.value);
+	filter.value = value;
 
 	return filter;
 }

@@ -5,11 +5,34 @@
  *      Author: Ari Suarkadipa
  */
 
-#ifndef TEST_TESTCONNECTOR_H_
-#define TEST_TESTCONNECTOR_H_
+#ifndef SPIDERBITE_TEST_TESTCONNECTOR_H_
+#define SPIDERBITE_TEST_TESTCONNECTOR_H_
 
 
+#include <cppunit/TestFixture.h>
+#include <cppunit/extensions/HelperMacros.h>
+
+#include "../inc/DoaImpl/SpiderBite/Connector.h"
+
+class TestConnector: public CppUnit::TestFixture
+{
+public:
+	CPPUNIT_TEST_SUITE(TestConnector);
+	CPPUNIT_TEST(testInsertWebsite);
+	CPPUNIT_TEST(testUpdateWebsite);
+	CPPUNIT_TEST(testDeleteWebsite);
+	CPPUNIT_TEST(testShowAllWebsite);
+	CPPUNIT_TEST_SUITE_END();
 
 
+private:
+	const string _dbName = "SpiderBite";
+	void testInsertWebsite();
+	void testUpdateWebsite();
+	void testDeleteWebsite();
+	void testShowAllWebsite();
+};
 
-#endif /* TEST_TESTCONNECTOR_H_ */
+CPPUNIT_TEST_SUITE_REGISTRATION( TestConnector );
+
+#endif /* SPIDERBITE_TEST_TESTCONNECTOR_H_ */

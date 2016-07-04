@@ -8,54 +8,16 @@
 #ifndef INC_CONNECTOR_H_
 #define INC_CONNECTOR_H_
 
-#include <ctime>
-
-#include "Poco/MongoDB/Connection.h"
-#include "Poco/MongoDB/Database.h"
-#include "Poco/MongoDB/InsertRequest.h"
-#include "Poco/MongoDB/UpdateRequest.h"
-#include "Poco/MongoDB/DeleteRequest.h"
-#include "Poco/MongoDB/QueryRequest.h"
-#include "Poco/MongoDB/MongoDB.h"
-#include "Poco/Net/NetException.h"
-#include "Poco/SharedPtr.h"
+#include "../../PocoMongoIncludes.h"
+#include "Website.h"
+#include "Filter.h"
 
 using namespace Poco;
-using namespace std;
 
 namespace Mitrais
 {
 	namespace util
 	{
-		// struct of Website
-		struct Website{
-			string 	content;
-			string 	protocolType;
-			time_t 	createdDate;
-			time_t 	lastUpdated;
-		};
-
-		// enum of Operator
-		enum Opr
-		{
-			EQUALS,
-			NOT_EQUALS,
-			GREATER_THAN,
-			GREATER_THAN_EQUALS,
-			LESS_THAN,
-			LESS_THAN_EQUALS,
-			IN,
-			NOT_IN
-		};
-
-		// struct of Filter
-		struct Filter
-		{
-			string field;
-			string value;
-			Opr op;
-		};
-
 		/**
 		 * Class Connector is a DAO Layer using MongoDB
 		 */
@@ -116,9 +78,25 @@ namespace Mitrais
 			/**
 			 * Create filter used for delete method
 			 *
+			 * @param selectedColumn
+			 * 1 is content
+			 * 2 is protocolType
+			 *
+			 * @param selectedOpr is selected operator
+			 * 1. Equal
+			 * 2. Not Equal
+			 * 3. Greater
+			 * 4. Greater Than Equals
+			 * 5. Less Than
+			 * 6. Less Than Equal
+			 * 7. In
+			 * 8. Not In
+			 *
+			 * @param value is a value criteria to delete
+			 *
 			 * @return Filter
 			 */
-			Filter createFilter();
+			Filter createFilter(int selectedColumn, int selectedOpr, string value);
 
 		private:
 			Connector(Connector const&) {};
