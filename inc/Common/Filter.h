@@ -10,20 +10,16 @@
 
 #include "Operator.h"
 
-using namespace std;
+namespace DB {
+namespace Common {
 
-namespace Mitrais
+struct Filter
 {
-	namespace util
-	{
-		// struct of Filter
-		struct Filter{
-			string field;
-			string value;
-			Opr op;
-		};
-	}
-}
+	std::string field;
+	std::string value;
+	Operator op;
+};
 
+}}
 
 #endif /* INC_FILTER_H_ */
