@@ -1,8 +1,8 @@
 #ifndef INC_COMMON_DOCUMENT_H_
 #define INC_COMMON_DOCUMENT_H_
 
-namespace DB{
-namespace Common{
+namespace DB {
+namespace Common {
 
 class Document
 {

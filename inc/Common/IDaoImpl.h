@@ -2,9 +2,7 @@
 #define INC_COMMON_IDAOIMPL_H_
 
 #include <list>
-
 #include "Document.h"
-#include "Filter.h"
 
 namespace DB {
 namespace Common {
