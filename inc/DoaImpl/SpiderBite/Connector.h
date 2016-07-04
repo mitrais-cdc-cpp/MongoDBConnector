@@ -23,9 +23,9 @@ namespace DB
 class Connector
 {
 public:
-	// Global static pointer used to ensure a single instance of the class.
-	static Connector* Instance();
 
+	Connector() {};
+	virtual ~Connector() {};
 	/**
 	 * Insert Website to MongoDB
 	 *
@@ -94,8 +94,6 @@ public:
 	Filter createFilter(int selectedColumn, int selectedOpr, string value);
 
 private:
-	Connector() {};
-	static Connector* m_pInstance;
 	const string _host = "localhost";
 	const int _port = 27017;
 	const string _dbName = "SpiderBite";

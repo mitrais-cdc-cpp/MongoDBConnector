@@ -8,11 +8,12 @@
 #include "TestConnector.h"
 #include "../inc/DoaImpl/SpiderBite/Connector.h"
 
+using namespace DB;
 
 void TestConnector::testInsertWebsite()
 {
-	Mitrais::util::Connector connector;
-	Mitrais::util::Website website;
+	Connector connector;
+	Website website;
 	string content = "<html><head>Hello</head><body>World</body></html>";
 
 	website.content = content;
@@ -26,7 +27,7 @@ void TestConnector::testInsertWebsite()
 
 void TestConnector::testUpdateWebsite()
 {
-	Mitrais::util::Connector connector;
+	Connector connector;
 	string whereColumn = "content";
 	string whereValue = "<html><head>Hello</head><body>World</body></html>";
 	string newValue = "<html><head>Hello</head><body>New World</body></html>";
@@ -39,7 +40,7 @@ void TestConnector::testUpdateWebsite()
 
 void TestConnector::testShowAllWebsite()
 {
-	Mitrais::util::Connector connector;
+	Connector connector;
 	string content = "<html><head>Hello</head><body>World</body></html>";
 
 	connector.showAll();
@@ -51,12 +52,12 @@ void TestConnector::testShowAllWebsite()
 
 void TestConnector::testDeleteWebsite()
 {
-	Mitrais::util::Connector connector;
+	Connector connector;
 	string content = "http";
 
-	Mitrais::util::Filter filter = connector.createFilter(2,1, content);
+	DB::Common::Filter filter = connector.createFilter(2,1, content);
 
-	vector<Mitrais::util::Filter> filters;
+	vector<DB::Common::Filter> filters;
 	filters.push_back(filter);
 
 	connector.Delete(filters);
