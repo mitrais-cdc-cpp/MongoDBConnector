@@ -8,8 +8,7 @@ set(_ECLIPSE_VERSION "4.5")
 ###############################################################################
 
 file(GLOB SOURCES
- inc/*.h
- src/*.cpp)
+ 	src/Connector.cpp)
 
 message("Following sources found:")
 foreach(a ${SOURCES})
