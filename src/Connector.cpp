@@ -59,8 +59,8 @@ void Connector::Insert(Website &website) {
  * @param whereValue a condition
  * @param newValue a new value
  */
-void Connector::Update(MongoDB::Database &db,
-		string whereColumn, string whereValue, string newValue) {
+void Connector::Update(string whereColumn, string whereValue, string newValue) {
+	MongoDB::Database db(_dbName);
 	SharedPtr<MongoDB::UpdateRequest> updateRequest = db.createUpdateRequest(
 			_collectionName);
 

@@ -39,13 +39,11 @@ namespace Mitrais
 			/**
 			 * Update MongoDB
 			 *
-			 * @param db a db name
 			 * @param whereColumn a column
 			 * @param whereValue a condition
 			 * @param newValue a new value
 			 */
-			void Update(MongoDB::Database &db,
-					string whereColumn, string whereValue, string newValue);
+			void Update(string whereColumn, string whereValue, string newValue);
 
 			/**
 			 * Delete record on MongoDB
