@@ -26,13 +26,12 @@ void TestConnector::testInsertWebsite()
 
 void TestConnector::testUpdateWebsite()
 {
-	MongoDB::Database db(_dbName);
 	Mitrais::util::Connector connector;
 	string whereColumn = "content";
 	string whereValue = "<html><head>Hello</head><body>World</body></html>";
 	string newValue = "<html><head>Hello</head><body>New World</body></html>";
 
-	connector.Update(db, whereColumn, whereValue, newValue);
+	connector.Update(whereColumn, whereValue, newValue);
 	bool actual = true;
 	bool result = connector.checkIsExist(newValue);
 	CPPUNIT_ASSERT(result == actual);
