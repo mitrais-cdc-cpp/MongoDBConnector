@@ -1,23 +1,22 @@
-//============================================================================
-// Name        : Connector.cpp
-// Author      : mitrais-cdc-cpp
-// Version     :
-// Copyright   : Copyleft
-// Description : Connector for MongoDB
-//============================================================================
+/*
+ * Connector.cpp
+ *
+ *  Created on: Jul 1, 2016
+ *      Author: Ari Suarkadipa
+ */
 
-#include "../inc/Connector.hpp"
+#include "../inc/Connector.h"
 
-using namespace CDC;
+using namespace Mitrais::util;
 
 // Global static pointer used to ensure a single instance of the class.
-CPP::Connector* CPP::Connector::m_pInstance = NULL;
+Connector* Connector::m_pInstance = NULL;
 
 /** This function is called to create an instance of the class.
     Calling the constructor publicly is not allowed. The constructor
     is private and is only called by this Instance function.
 */
-CPP::Connector* CPP::Connector::Instance()
+Connector* Connector::Instance()
 {
 	if (!m_pInstance)
 	{
@@ -27,31 +26,43 @@ CPP::Connector* CPP::Connector::Instance()
 	return m_pInstance;
 }
 
-void CPP::Connector::Insert(Person &person) {
+/**
+ * Insert Website to MongoDB
+ *
+ * @param website is a website data to insert
+ */
+void Connector::Insert(Website &website) {
 	DateTime now;
-	MongoDB::Document::Ptr personPtr = new MongoDB::Document();
+	MongoDB::Document::Ptr websitePtr = new MongoDB::Document();
 
-	personPtr->add("firstName", person.firstName);
-	personPtr->add("lastName", person.lastName);
-	personPtr->add("address", person.address);
-	personPtr->add("createdDate", now.timestamp());
-	personPtr->add("lastUpdated", MongoDB::NullValue());
+	websitePtr->add("content", website.content);
+	websitePtr->add("protocolType", website.protocolType);
+	websitePtr->add("createdDate", now.timestamp());
+	websitePtr->add("lastUpdated", MongoDB::NullValue());
 
-	MongoDB::Database db("MitraisTestDB");
+	MongoDB::Database db(_dbName);
 	SharedPtr<MongoDB::InsertRequest> insertRequest = db.createInsertRequest(
-			"Person");
-	insertRequest->documents().push_back(personPtr);
+			_collectionName);
+	insertRequest->documents().push_back(websitePtr);
 
 	MongoDB::Connection mongo;
-	mongo.connect("localhost", 27017);
+	mongo.connect(_host, _port);
 
 	mongo.sendRequest(*insertRequest);
 }
 
-void CPP::Connector::Update(MongoDB::Database &db,
+/**
+ * Update MongoDB
+ *
+ * @param db a db name
+ * @param whereColumn a column
+ * @param whereValue a condition
+ * @param newValue a new value
+ */
+void Connector::Update(MongoDB::Database &db,
 		string whereColumn, string whereValue, string newValue) {
 	SharedPtr<MongoDB::UpdateRequest> updateRequest = db.createUpdateRequest(
-			"Person");
+			_collectionName);
 
 	MongoDB::Document& selector = updateRequest->selector();
 	MongoDB::Document& update = updateRequest->update();
@@ -60,15 +71,20 @@ void CPP::Connector::Update(MongoDB::Database &db,
 	update.addNewDocument("$set").add(whereColumn, newValue);
 
 	MongoDB::Connection mongo;
-	mongo.connect("localhost", 27017);
+	mongo.connect(_host, _port);
 
 	mongo.sendRequest(*updateRequest);
 }
 
-void CPP::Connector::Delete(vector<Filter> &filters)
+/**
+ * Delete record on MongoDB
+ *
+ * @param filters a filter
+ */
+void Connector::Delete(vector<Filter> &filters)
 {
-	MongoDB::Database db("MitraisTestDB");
-	SharedPtr<MongoDB::DeleteRequest> deleteRequest = db.createDeleteRequest("Person");
+	MongoDB::Database db(_dbName);
+	SharedPtr<MongoDB::DeleteRequest> deleteRequest = db.createDeleteRequest(_collectionName);
 
 	if (!filters.empty())
 	{
@@ -131,13 +147,19 @@ void CPP::Connector::Delete(vector<Filter> &filters)
 	}
 
 	MongoDB::Connection mongo;
-	mongo.connect("localhost", 27017);
+	mongo.connect(_host, _port);
 
 	mongo.sendRequest(*deleteRequest);
 }
 
+/**
+ * Get all record from MongoDB
+ *
+ * @param response a response
+ * @return template a template
+ */
 template<typename T>
-vector<T> CPP::Connector::GetAll(MongoDB::ResponseMessage &response) {
+vector<T> Connector::GetAll(MongoDB::ResponseMessage &response) {
 	vector<T> collection;
 	try{
 		int size = response.documents().size();
@@ -145,9 +167,8 @@ vector<T> CPP::Connector::GetAll(MongoDB::ResponseMessage &response) {
 			T obj;
 			MongoDB::Document::Ptr doc = response.documents()[i];
 
-			obj.firstName = doc->get<string>("firstName");
-			obj.lastName = doc->get<string>("lastName");
-			obj.address = doc->get<string>("address");
+			obj.content = doc->get<string>("content");
+			obj.protocolType = doc->get<string>("protocolType");
 
 			collection.push_back(obj);
 		}
@@ -159,27 +180,30 @@ vector<T> CPP::Connector::GetAll(MongoDB::ResponseMessage &response) {
 	return collection;
 }
 
-void CPP::Connector::showAll() {
-	cout << "------------------- Employee Data -------------------" << endl;
-	cout << "No.   |   First Name   |   LastName   |   Address   |" << endl;
-	cout << "-----------------------------------------------------" << endl;
+/**
+ * Show all records from MongoDB
+ */
+void Connector::showAll() {
+	cout << "------------- Website Data --------------" << endl;
+	cout << "No.   |   Content   |   Protocol Type   |" << endl;
+	cout << "-----------------------------------------" << endl;
 
 	try {
-		MongoDB::QueryRequest request("MitraisTestDB.Person");
+		MongoDB::QueryRequest request(_dbName + "." + _collectionName);
 		MongoDB::ResponseMessage response;
 
 		MongoDB::Connection mongo;
-		mongo.connect("localhost", 27017);
+		mongo.connect(_host, _port);
 
 		mongo.sendRequest(request, response);
 
-		vector<Person> employees = GetAll<Person>(response);
-		int size = employees.size();
+		vector<Website> websites = GetAll<Website>(response);
+		int size = websites.size();
 
 		for (int i = 0; i < size; i++) {
-			Person obj = employees[i];
-			cout << "  " << (i + 1) << "   |   " << obj.firstName << "   |   "
-					<< obj.lastName << "   |   " << obj.address << endl;
+			Website obj = websites[i];
+			cout << "  " << (i + 1) << "   |   " << obj.content << "   |   "
+					<< obj.protocolType << endl;
 		}
 	}
 	catch (NotFoundException& nfe) {
@@ -190,29 +214,32 @@ void CPP::Connector::showAll() {
     }
 }
 
-CPP::Filter CPP::Connector::createFilter() {
-	CPP::Filter filter;
+/**
+ * Create filter used for delete method
+ *
+ * @return Filter
+ */
+Filter Connector::createFilter() {
+	Filter filter;
 
-	cout << "What column to be filtered (1-3): " << endl;
-	cout << "1. First Name" << endl;
-	cout << "2. Last Name" << endl;
-	cout << "3. Address" << endl;
-	cout << "Please enter your choice (1-3) : ";
+	cout << "What column to be filtered (1-2): " << endl;
+	cout << "1. Content" << endl;
+	cout << "2. Protocol Type" << endl;
+	cout << "Please enter your choice (1-2) : ";
 	int selectedColumn;
 	cin >> selectedColumn;
 
-	switch (selectedColumn) {
-	case 1: {
-		filter.field = "firstName";
-	}
+	switch (selectedColumn)
+	{
+		case 1:
+		{
+			filter.field = "content";
+		}
 		break;
-	case 2: {
-		filter.field = "lastName";
-	}
-		break;
-	case 3: {
-		filter.field = "address";
-	}
+		case 2:
+		{
+			filter.field = "protocolType";
+		}
 	}
 
 	cout << "Operator : " << endl;
@@ -269,13 +296,19 @@ CPP::Filter CPP::Connector::createFilter() {
 	return filter;
 }
 
-void checkIsExist(string employeeName)
+/**
+ * Check the record is Database
+ *
+ * @param content a content to search
+ */
+bool Connector::checkIsExist(string content)
 {
+	bool result = false;
 	MongoDB::Connection mongo;
-	MongoDB::QueryRequest request("MitraisTestDB.Person");
+	MongoDB::QueryRequest request(_dbName + "." + _collectionName);
 	MongoDB::ResponseMessage response;
 
-	mongo.connect("localhost", 27017);
+	mongo.connect(_host, _port);
 	mongo.sendRequest(request, response);
 
 	if ( response.documents().size() > 0 )
@@ -287,11 +320,12 @@ void checkIsExist(string employeeName)
 
 			try
 			{
-				string empName = doc->get<string>("firstName");
+				string contentName = doc->get<string>("content");
 
-				if (empName == employeeName)
+				if (contentName == content)
 				{
-					cout << employeeName << " is exist on our database."<<endl;
+					cout << "Content " << content << " is exist on our database."<<endl;
+					result = true;
 				}
 			}
 			catch(Poco::Exception& ex)
@@ -302,6 +336,10 @@ void checkIsExist(string employeeName)
 	}
 	else
 	{
-		cout << "There are no employee data " << employeeName << " on our database."<<endl;
+		cout << "There are no Website data " << content << " on our database."<<endl;
 	}
+
+	return result;
 }
+
+

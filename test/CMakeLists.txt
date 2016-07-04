@@ -1,76 +1,64 @@
-cmake_minimum_required(VERSION 3.1)
-project(MongoDaoTest)
+cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
+project(DAO_Test VERSION 0.1 LANGUAGES CXX)
 
-###############################################################################
-## version ####################################################################
-###############################################################################
+set(_ECLIPSE_VERSION "4.5")
 
-#set (MongoDaoTest_VERSION_MAJOR 1)
-#set (MongoDaoTest_VERSION_MINOR 0)
- 
- 
 ###############################################################################
 ## file globbing ##############################################################
 ###############################################################################
 
+file(GLOB SOURCES
+ *.h
+ *.cpp)
+
+#to take control which files are used, dont go recursive through
+#file(GLOB_RECURSE SOURCES src/*.cpp inc/*.h)
+
+message("Following sources found:")
+foreach(a ${SOURCES})
+  message("${a}")
+endforeach()
 
 ###############################################################################
 ## target definitions #########################################################
 ###############################################################################
 
-#Generate the executable
-add_executable(MongoDaoTest TestSuiteMongo.cpp)
+#Generate the shared library from the sources
+add_executable(DAO_Test ${SOURCES})
+
+#Set Debug or Release
+set(CMAKE_BUILD_TYPE Debug)
 
 # just for example add some compiler flags
-#target_compile_options(MongoDaoTest PUBLIC -Wall)
+#target_compile_options(DAO_Test PUBLIC -Wextra)
 
-set_property(TARGET MongoDaoTest PROPERTY CXX_STANDARD 11)
+###############################################################################
+## compiler definitions########################################################
+###############################################################################
+
+#enable c++11 and set it required
+set_property(TARGET DAO_Test PROPERTY CXX_STANDARD 11)
+set_property(TARGET DAO_Test PROPERTY CXX_STANDARD_REQUIRED ON)
+
+#project(DAO_Test CXX)
+#message("Your C++ compiler supports these C++ features:")
+#foreach(i ${CMAKE_CXX_COMPILE_FEATURES})
+#  message("${i}")
+#endforeach()
 
 
 ###############################################################################
 ## dependencies ###############################################################
 ###############################################################################
 
-# set the MongoDao Lib paths and libs
-set(MONGODAOLIB_PREFIX      "/usr/local")
-set(MONGODAOLIB_INCLUDE_DIR 	"${MONGODAOLIB_PREFIX}/include")
-set(MONGODAOLIB_LIB_DIR     	"${MONGODAOLIB_PREFIX}/lib")
-set(MONGODAOLIB_LIBS        	"${MONGODAOLIB_LIB_DIR}/libMongoDaoLib.so")
-
+# POCO
 # set the POCO paths and libs
-set(POCO_PREFIX      "/usr/local")
-set(POCO_INCLUDE_DIR "${POCO_PREFIX}/include")
-set(POCO_LIB_DIR     "${POCO_PREFIX}/lib")
-set(POCO_LIBS        "${POCO_LIB_DIR}/libPocoNetd.so"
-                     "${POCO_LIB_DIR}/libPocoUtild.so"
-                     "${POCO_LIB_DIR}/libPocoMongoDBd.so")
+set(DAO_PREFIX "../build") # the directory containing "include" and "lib"
+set(DAO_INCLUDE_DIR"../inc")
+set(DAO_LIB_DIR "${DAO_PREFIX}")
+set(DAO_LIBS
+        "${DAO_LIB_DIR}/libDAO.a")
 
-# set the include path for the app
-target_include_directories(MongoDaoTest PRIVATE 
-						"${POCO_INCLUDE_DIR}" 
-						"${MONGODAOLIB_INCLUDE_DIR}")
-
-# link the app against POCO
-target_link_libraries(MongoDaoTest PRIVATE 
-						"${POCO_LIBS}" 
-						"${MONGODAOLIB_LIBS}")
-
-
-###############################################################################
-## install ####################################################################
-###############################################################################
-
-
-
-###############################################################################
-## Outputs ####################################################################
-###############################################################################
-
-message(STATUS "\n------------ PATHS: ------------")
-message(STATUS ">> MONGODAOLIB inc: ${MONGODAOLIB_INCLUDE_DIR}")
-message(STATUS ">> MONGODAOLIB lib: ${MONGODAOLIB_LIB_DIR}")
-message(STATUS ">> Poco inc: ${POCO_INCLUDE_DIR}")
-message(STATUS ">> Poco lib: ${POCO_LIB_DIR}")
-message(STATUS "\n")
-
-
+include_directories(${DAO_INCLUDE})
+link_directories(${DAO_LIB_DIR})
+target_link_libraries(DAO_Test ${DAO_LIBS})
