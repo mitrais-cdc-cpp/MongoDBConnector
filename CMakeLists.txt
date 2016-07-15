@@ -15,7 +15,7 @@ file(GLOB SOURCES
 ###############################################################################
 
 #Generate the shared library from the sources
-add_library(MongoDao ${SOURCES})
+add_library(MongoDao SHARED ${SOURCES})
 
 #Set Debug or Release
 set(CMAKE_BUILD_TYPE Debug)

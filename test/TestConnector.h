@@ -19,18 +19,18 @@ class TestConnector: public CppUnit::TestFixture
 public:
 	CPPUNIT_TEST_SUITE(TestConnector);
 	CPPUNIT_TEST(testInsertWebsite);
+	CPPUNIT_TEST(testShowAllWebsite);
 	CPPUNIT_TEST(testUpdateWebsite);
 	CPPUNIT_TEST(testDeleteWebsite);
-	CPPUNIT_TEST(testShowAllWebsite);
 	CPPUNIT_TEST_SUITE_END();
 
 
 private:
 	const string _dbName = "SpiderBite";
 	void testInsertWebsite();
+	void testShowAllWebsite();
 	void testUpdateWebsite();
 	void testDeleteWebsite();
-	void testShowAllWebsite();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestConnector );
