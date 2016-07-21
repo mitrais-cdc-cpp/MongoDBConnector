@@ -7,8 +7,10 @@ set(_ECLIPSE_VERSION "4.5")
 ## file globbing ##############################################################
 ###############################################################################
 
-file(GLOB SOURCES
- 	src/Connector.cpp)
+file(GLOB SOURCES src/Connector.cpp)
+
+include_directories(inc)  
+ 	
 
 ###############################################################################
 ## target definitions #########################################################
@@ -59,3 +61,42 @@ find_package(Threads REQUIRED)
 include_directories(${POCO_INCLUDE})
 link_directories(${POCO_LIB_DIR})
 target_link_libraries(MongoDao ${POCO_LIBS} Threads::Threads)
+
+####################
+##  Installation  ##
+####################
+
+# Set installation destination folder for .so and .h files.
+# Change the destination folder
+###############################
+set(INSTALLATION_DIR "/home/developer/workspace/SpiderBite/env/mongodao/lib")
+set(HEADER_DIR "/home/developer/workspace/SpiderBite/env/mongodao/inc")
+
+# Set header location that will be copied
+file(GLOB HEADERS inc/*)
+
+# Install .so file
+#install(TARGETS MongoDao DESTINATION ${INSTALLATION_DIR}
+#	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ WORLD_WRITE)
+
+INSTALL( FILES "${CMAKE_CURRENT_SOURCE_DIR}/libMongoDao.so"
+	DESTINATION ${INSTALLATION_DIR}
+	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ WORLD_WRITE)
+
+# Install .h files
+foreach(ITEM ${HEADERS})
+   IF( IS_DIRECTORY "${ITEM}" )
+      LIST( APPEND DIRS_TO_DEPLOY "${ITEM}" )
+   ELSE()
+      LIST( APPEND FILES_TO_DEPLOY "${ITEM}" )
+   ENDIF()
+endforeach()
+
+INSTALL( FILES ${FILES_TO_DEPLOY} DESTINATION ${HEADER_DIR} 
+	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ WORLD_WRITE)
+
+INSTALL( DIRECTORY ${DIRS_TO_DEPLOY} DESTINATION ${HEADER_DIR} )
+	
+
+
+
