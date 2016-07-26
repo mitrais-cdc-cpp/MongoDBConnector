@@ -12,7 +12,7 @@ using namespace DB;
 
 void TestConnector::testInsertWebsite()
 {
-	Connector connector;
+	Connector connector(_host, _port, _dbName);
 	Website website;
 	string content = "<html><head>Hello</head><body>World</body></html>";
 
@@ -25,9 +25,10 @@ void TestConnector::testInsertWebsite()
 	CPPUNIT_ASSERT(result == actual);
 }
 
+
 void TestConnector::testUpdateWebsite()
 {
-	Connector connector;
+	Connector connector(_host, _port, _dbName);
 	string whereColumn = "content";
 	string whereValue = "<html><head>Hello</head><body>World</body></html>";
 	string newValue = "<html><head>Hello</head><body>New World</body></html>";
@@ -40,7 +41,7 @@ void TestConnector::testUpdateWebsite()
 
 void TestConnector::testShowAllWebsite()
 {
-	Connector connector;
+	Connector connector(_host, _port, _dbName);
 	string content = "<html><head>Hello</head><body>World</body></html>";
 
 	connector.showAll();
@@ -52,7 +53,7 @@ void TestConnector::testShowAllWebsite()
 
 void TestConnector::testDeleteWebsite()
 {
-	Connector connector;
+	Connector connector(_host, _port, _dbName);
 	string content = "http";
 
 	DB::Common::Filter filter = connector.createFilter(2,1, content);
