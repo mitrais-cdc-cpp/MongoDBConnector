@@ -10,6 +10,24 @@
 using namespace DB;
 
 /**
+ * Default constructor
+ * @param host: host address
+ * @param port: host port
+ * @param dbName: database name
+ */
+Connector::Connector(const string &host, const int &port, const string &dbName)
+	: _host(host), _port(port), _dbName(dbName)
+{
+}
+
+/**
+ * Default destructor
+ */
+Connector::~Connector()
+{
+}
+
+/**
  * Insert Website to MongoDB
  *
  * @param website is a website data to insert

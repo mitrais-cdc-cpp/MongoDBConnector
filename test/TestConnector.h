@@ -24,13 +24,15 @@ public:
 	CPPUNIT_TEST(testDeleteWebsite);
 	CPPUNIT_TEST_SUITE_END();
 
-
 private:
-	const string _dbName = "SpiderBite";
 	void testInsertWebsite();
 	void testShowAllWebsite();
 	void testUpdateWebsite();
 	void testDeleteWebsite();
+	const string _host = "localhost";
+	const int _port = 27017;
+	const string _dbName = "SpiderBiteTest";
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestConnector );
