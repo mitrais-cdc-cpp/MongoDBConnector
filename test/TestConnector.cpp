@@ -18,6 +18,7 @@ void TestConnector::testInsertWebsite()
 
 	website.content = content;
 	website.protocolType = "http";
+	website.url = "mitrais.com";
 	connector.Insert(website);
 
 	bool actual = true;

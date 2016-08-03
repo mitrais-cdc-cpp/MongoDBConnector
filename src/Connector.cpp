@@ -36,8 +36,9 @@ void Connector::Insert(Website &website) {
 	DateTime now;
 	MongoDB::Document::Ptr websitePtr = new MongoDB::Document();
 
-	websitePtr->add("content", website.content);
 	websitePtr->add("protocolType", website.protocolType);
+	websitePtr->add("url", website.url);
+	websitePtr->add("content", website.content);
 	websitePtr->add("createdDate", now.timestamp());
 	websitePtr->add("lastUpdated", MongoDB::NullValue());
 
@@ -68,8 +69,11 @@ void Connector::Update(string whereColumn, string whereValue, string newValue) {
 	MongoDB::Document& selector = updateRequest->selector();
 	MongoDB::Document& update = updateRequest->update();
 
+	DateTime now;
+
 	selector.add(whereColumn, whereValue);
-	update.addNewDocument("$set").add(whereColumn, newValue);
+	update.addNewDocument("$set").add(whereColumn, newValue)
+		  .add("lastUpdated", now.timestamp());
 
 	MongoDB::Connection mongo;
 	mongo.connect(_host, _port);
